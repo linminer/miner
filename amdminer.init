@@ -12,7 +12,7 @@
 
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 
-WOLFMINER_HOME=/home/bdoctor/wolf-xmr-miner
+WOLFMINER_HOME=/home/bdoctor/miner/wolf
 
 WOLFMINER=$WOLFMINER_HOME/miner
 #WOLFMINERCONF="/home/bdoctor/miner49er/zcash.conf"
