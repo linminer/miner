@@ -1,0 +1,55 @@
+#! /bin/sh
+# bdoctor
+### BEGIN INIT INFO
+# Provides:          miner
+# Required-Start:
+# Required-Stop:
+# Default-Start: 3 5
+# Default-Stop:
+# Short-Description: start mining
+# Description:
+### END INIT INFO
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+
+WOLFMINER_HOME=/home/bdoctor/wolf-xmr-miner
+
+WOLFMINER=$WOLFMINER_HOME/miner
+#WOLFMINERCONF="/home/bdoctor/miner49er/zcash.conf"
+#WOLFMINERCONF="/home/bdoctor/miner49er/bitcoingold.conf"
+#WOLFMINERCONF="/home/bdoctor/miner49er/minergate.conf"
+WOLFMINERCONF="/home/bdoctor/miner49er/wolf-xmrpool.conf"
+#WOLFMINERCONF="/home/bdoctor/miner49er/electroneum.conf"
+
+PIDFILE=/var/run/ccminer.pid
+
+
+. /lib/lsb/init-functions
+
+do_stop () {
+	log_action_msg "Stopping miner"
+	kill -TERM `ps ax|grep $WOLFMINER|grep -v grep|awk '{print $1}'`
+	exit
+}
+
+do_start () {
+	log_action_msg "Starting miner"
+	start_daemon -p $PIDFILE $WOLFMINER $WOLFMINERCONF > /tmp/wolfminer.log
+}
+
+case "$1" in
+  start)
+	do_start
+	;;
+  stop)
+	do_stop
+	;;
+  status)
+	ps ax|grep $WOLFMINER
+	exit 0
+	;;
+  *)
+	echo "Usage: $0 start|stop" >&2
+	exit 3
+	;;
+esac

