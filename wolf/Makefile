@@ -1,6 +1,6 @@
 CC		= gcc
 LD		= gcc
-OPT 	= -O4 -s -I/usr/local/cuda/include -L/usr/local/cuda/lib64
+OPT 	= -O2 -s -I/home/bdoctor/Common/Lib/AMD/APPSDK/3-0/include/ -L/usr/local/cuda/lib64
 CFLAGS 	= -D_POSIX_SOURCE -D_GNU_SOURCE $(OPT) -c -std=c11
 LDFLAGS	= -DPTW32_STATIC_LIB $(OPT)
 LIBS	= -ljansson -lOpenCL -lpthread -ldl
