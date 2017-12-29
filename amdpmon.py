@@ -27,6 +27,8 @@ for gpu in adapter_files:
     pwrRE = re.compile('(^.*)\((.*)\)$')
     powerout = False
     logMsg = ''
+    Load = ''
+    Temp = ''
     
     for l in lines:
         l = l.strip()
@@ -58,4 +60,5 @@ for gpu in adapter_files:
                 print 'missed ', l
     
     toLog = '%s,%s%s' % ('Adapter:%s' % gpu,logMsg,'GPUTemp:%s,GPULoad:%s' % (Temp,Load))
-    syslog.syslog(toLog)
+    if Temp and Load:
+        syslog.syslog(toLog)
