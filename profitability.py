@@ -47,9 +47,9 @@ for coin in Profits:
 
 for curr in watchlist:
     if Max24Coins.get(curr):
-        print ('watched 24 hour: %s %f' % (curr,Max24Coins[curr]))
+        print ('W24h  : %-3.1f,%6s' % (Max24Coins[curr],curr))
     if MaxNowCoins.get(curr):
-        print ('watched now: %s %f' % (curr,Max24Coins[curr]))
+        print ('Wnow  : %-3.1f, %6s' % (Max24Coins[curr],curr))
 
 cnt  = 0
 maxc = 10
@@ -59,7 +59,9 @@ for hashitem in (Max24Coins,'24Hour'), (MaxNowCoins, 'Now'):
     for item in OrderedDict(sorted(hashitem[0].items(), key = itemgetter(1), reverse = True)):
         cnt += 1
         if hashitem[0][item] > 100:
-            print ('%6s: %-1f, %s'% (hashitem[1],hashitem[0][item],item))
-        #if cnt >= maxc:
-        #    break
+            print ('%6s: %-3.1f, %s'% (hashitem[1],hashitem[0][item],item))
+        else:
+            if cnt >= maxc:
+                break
+            print ('%6s: %-3.1f, %s'% (hashitem[1],hashitem[0][item],item))
 

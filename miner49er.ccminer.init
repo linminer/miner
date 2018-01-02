@@ -17,7 +17,8 @@ CCMINER=$CCMINER_HOME/ccminer
 #CCMINERCONF="/home/bdoctor/miner49er/zcash.conf"
 #CCMINERCONF="/home/bdoctor/miner49er/bitcoingold.conf"
 #CCMINERCONF="/home/bdoctor/miner49er/minergate.conf"
-CCMINERCONF="/home/bdoctor/miner49er/xmrpool.conf"
+#CCMINERCONF="/home/bdoctor/miner49er/xmrpool.conf"
+CCMINERCONF="/home/bdoctor/miner49er/sumokoin.conf"
 #CCMINERCONF="/home/bdoctor/miner49er/electroneum.conf"
 
 PIDFILE=/var/run/ccminer.pid
