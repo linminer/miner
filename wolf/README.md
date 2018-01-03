@@ -23,6 +23,9 @@ total number of threads you're using, as root.
 
 Also, it can run faster as root, which allows it to use mlock.
 
+# bdoctor's additions
+Added syslog support. I know this isn't developed any longer, but it does very well for XMR
+
 # Solo mining
 
 Use a URL of "daemon+tcp://<host>:<port>" - requires bitmonerod v0.9.3.1 or newer
