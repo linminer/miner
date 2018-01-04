@@ -11,6 +11,7 @@
 ### END INIT INFO
 
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64
 
 CCMINER_HOME=/home/bdoctor/ccminer
 CCMINER=$CCMINER_HOME/ccminer
@@ -18,7 +19,7 @@ CCMINER=$CCMINER_HOME/ccminer
 #CCMINERCONF="/home/bdoctor/miner49er/bitcoingold.conf"
 #CCMINERCONF="/home/bdoctor/miner49er/minergate.conf"
 #CCMINERCONF="/home/bdoctor/miner49er/xmrpool.conf"
-CCMINERCONF="/home/bdoctor/miner49er/sumokoin.conf"
+CCMINERCONF="/home/bdoctor/miner/sumokoin.conf"
 #CCMINERCONF="/home/bdoctor/miner49er/electroneum.conf"
 
 PIDFILE=/var/run/ccminer.pid
