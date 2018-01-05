@@ -1,0 +1,48 @@
+Adapter  0    (BN=01, DN=00, PCIID=67DF1002, SSID=341B1462)
+    Asic Family        :  Ellesmere      
+    Flash Type         :  W25X40      (512 KB)
+    Product Name       :  113-MSITV341MH.5N1 
+    Bios Config File   :  7101018.222    
+    Bios P/N           :  113-V34122-X3  
+    Bios Version       :  015.050.002.001.000000
+    Bios Date          :  10/17/17 22:16 
+    ROM Image Type     :  Hybrid Images
+    ROM Image Details  :  
+        Image[0]: Size(60416 Bytes), Type(Legacy Image)
+        Image[1]: Size(58880 Bytes), Type(EFI Image)
+Adapter  1    (BN=04, DN=00, PCIID=67DF1002, SSID=341B1462)
+    Asic Family        :  Ellesmere      
+    Flash Type         :  W25X40      (512 KB)
+    Product Name       :  113-MSITV341MH.5N1 
+    Bios Config File   :  7101018.222    
+    Bios P/N           :  113-V34122-X3  
+    Bios Version       :  015.050.002.001.000000
+    Bios Date          :  10/17/17 22:16 
+    ROM Image Type     :  Hybrid Images
+    ROM Image Details  :  
+        Image[0]: Size(60416 Bytes), Type(Legacy Image)
+        Image[1]: Size(58880 Bytes), Type(EFI Image)
+Adapter  2    (BN=05, DN=00, PCIID=67DF1002, SSID=341B1462)
+    Asic Family        :  Ellesmere      
+    Flash Type         :  W25X40      (512 KB)
+    Product Name       :  113-MSITV341MH.5N1 
+    Bios Config File   :  7101018.222    
+    Bios P/N           :  113-V34122-X3  
+    Bios Version       :  015.050.002.001.000000
+    Bios Date          :  10/17/17 22:16 
+    ROM Image Type     :  Hybrid Images
+    ROM Image Details  :  
+        Image[0]: Size(60416 Bytes), Type(Legacy Image)
+        Image[1]: Size(58880 Bytes), Type(EFI Image)
+Adapter  3    (BN=07, DN=00, PCIID=67DF1002, SSID=341B1462)
+    Asic Family        :  Ellesmere      
+    Flash Type         :  W25X40      (512 KB)
+    Product Name       :  113-MSITV341MH.5N1 
+    Bios Config File   :  7101018.222    
+    Bios P/N           :  113-V34122-X3  
+    Bios Version       :  015.050.002.001.000000
+    Bios Date          :  10/17/17 22:16 
+    ROM Image Type     :  Hybrid Images
+    ROM Image Details  :  
+        Image[0]: Size(60416 Bytes), Type(Legacy Image)
+        Image[1]: Size(58880 Bytes), Type(EFI Image)
