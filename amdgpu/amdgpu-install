@@ -1,0 +1,226 @@
+#!/bin/bash
+#
+# Copyright 2016-2017 Advanced Micro Devices, Inc.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+
+set -e
+shopt -s nullglob
+
+REPOSITORY="/var/opt/amdgpu-pro-local"
+
+BASE_PACKAGE=amdgpu-core
+META_PACKAGE=amdgpu
+OPENGL_META_PACKAGE=amdgpu-pro
+OPENCL_LEGACY_META_PACKAGE=opencl-amdgpu-pro
+OPENCL_ROCM_META_PACKAGE=rocm-amdgpu-pro
+VULKAN_META_PACKAGE=vulkan-amdgpu-pro
+LIB32_META_PACKAGE=amdgpu-lib32
+LIB32_OPENGL_META_PACKAGE=amdgpu-pro-lib32
+LIB32_VULKAN_META_PACKAGE=vulkan-amdgpu-pro:i386
+PX_PACKAGE=xserver-xorg-video-modesetting-amdgpu-pro
+
+usage() {
+	cat <<END_USAGE
+Usage: $PROG [options...]
+
+Options:
+  -h|--help                Display this help message
+  --px                     PX platform support
+  --online                 Force installation from an online repository
+  --version=VERSION        Install the specified driver VERSION
+  --pro                    Install "pro" support (legacy OpenGL and Vulkan)
+  --opencl=legacy          Install legacy OpenCL support
+  --opencl=rocm            Install ROCm OpenCL support
+  --opencl=legacy,rocm     Install both legacy and ROCm OpenCL support
+  --headless               Headless installation (only OpenCL support)
+  --compute                (DEPRECATED) Equal to --opencl=legacy --headless
+
+  Unless the -h|--help option is given, 'apt-get' or 'aptitude' options
+  may be present.
+
+  Unless headless installation is requested, OpenGL support will be installed.
+
+  When installing from an online repository, it is assumed the repository
+  has been properly configured.
+
+  Installation of the specified version is always performed from
+  an online repository.
+
+END_USAGE
+}
+
+function stderr() {
+	cat - 1>&2
+}
+
+function os_release() {
+	[[ -r  /etc/os-release ]] && . /etc/os-release
+
+	case "$ID" in
+	ubuntu)
+		:
+		;;
+	*)
+		echo "Unsupported OS" | stderr
+		exit 1
+		;;
+	esac
+}
+
+function source_list() {
+	local dir etc sourceparts
+
+	eval $(apt-config shell dir Dir)
+	eval $(apt-config shell etc Dir::Etc)
+	eval $(apt-config shell sourceparts Dir::Etc::sourceparts)
+
+	echo ${dir%/}/${etc%/}/${sourceparts%/}/amdgpu-pro.list
+}
+
+function build_package_list() {
+	local meta_packages=()
+	local opencl_meta_packages=()
+	local pro_meta_packages=()
+	local dep_packages=()
+
+	[[ "${OPTIONS[*]}" =~ "pro" ]] \
+		&& pro_meta_packages=($OPENGL_META_PACKAGE \
+				$VULKAN_META_PACKAGE \
+				$LIB32_OPENGL_META_PACKAGE \
+				$LIB32_VULKAN_META_PACKAGE)
+
+	if [[ "${OPTIONS[*]}" =~ "opencl" ]]; then
+		[[ "${OPENCL_OPTIONS[*]}" =~ "legacy" ]] \
+			&& opencl_meta_packages=($OPENCL_LEGACY_META_PACKAGE)
+
+		[[ "${OPENCL_OPTIONS[*]}" =~ "rocm" ]] \
+			&& opencl_meta_packages=(${opencl_meta_packages[*]} \
+				$OPENCL_ROCM_META_PACKAGE)
+
+		if [[ "${OPTIONS[*]}" =~ "headless" ]]; then
+			meta_packages=(${opencl_meta_packages[*]})
+		else
+			meta_packages=($META_PACKAGE $LIB32_META_PACKAGE \
+				${pro_meta_packages[*]} \
+				${opencl_meta_packages[*]})
+		fi
+	else
+		meta_packages=($META_PACKAGE $LIB32_META_PACKAGE \
+				${pro_meta_packages[*]})
+	fi
+
+	if [[ "${OPTIONS[*]}" =~ "version" ]]; then
+		for mp in ${meta_packages[*]}; do
+			dep_packages+=($(apt-cache show $mp=$VER | \
+				grep Depends: | \
+				sed 's/Depends: //;s/[ ()]//g;s/,/ /g'))
+		done
+
+		meta_packages=(${meta_packages[*]/%/=$VER})
+	fi
+
+	PACKAGES=(${meta_packages[*]} ${dep_packages[*]})
+
+	[[ "${OPTIONS[*]}" =~ "px" ]] \
+		&& PACKAGES=(${PACKAGES[*]} $PX_PACKAGE)
+
+	return 0
+}
+
+function amdgpu_pro_install() {
+	local src=$(cd ${0%/*} && pwd -P)
+	local index1="$src/Packages"
+	local index2="$src/Release"
+	local sentinel=($src/amdgpu-core*.deb)
+
+	amdgpu_pro_uninstall ${1+"$@"}
+
+	if [[ ! "${OPTIONS[*]}" =~ "online" &&
+		  -r "$index1" && -r "$index2" && ${#sentinel[*]} -gt 0 ]]; then
+		$SUDO mkdir -p $REPOSITORY && $SUDO cp -af "$src"/* $_
+		$SUDO ln -sf $_/$PROG $SBIN/${PROG%-*}-uninstall
+		echo "deb [ trusted=yes ] file:$REPOSITORY/ ./" | \
+			$SUDO tee $(source_list)
+	fi
+
+	$SUDO apt-get update ||:
+	$SUDO $APT -o Dpkg::Options::="--force-overwrite" ${1+"$@"} install ${PACKAGES[*]}
+}
+
+function amdgpu_pro_uninstall() {
+	[[ -r "$(source_list)" ]] || return 0
+	dpkg -l $BASE_PACKAGE >/dev/null 2>&1 || return 0
+	$SUDO apt-get ${1+"$@"} remove --purge $BASE_PACKAGE
+	$SUDO rm -rf $SBIN/${PROG%-*}-uninstall $(source_list) $REPOSITORY
+	$SUDO apt-get update ||:
+}
+
+PROG=${0##*/}
+SUDO=$([[ $(id -u) -ne 0 ]] && echo "sudo" ||:)
+SBIN="/usr/bin"
+VER=""
+APT="apt"
+OPTIONS=()
+OPENCL_OPTIONS=()
+
+os_release
+
+[[ "$PROG" =~ "pro" ]] && OPTIONS+=(pro)
+
+while (($#))
+do
+	case "$1" in
+	-h|--help)
+		usage
+		exit 0
+		;;
+	--px|--online|--headless|--pro)
+		OPTIONS+=(${1#--})
+		shift
+		;;
+	--version*)
+		OPTIONS+=(online)
+		OPTIONS+=(version)
+		VER=${1#--version=}
+		shift
+		;;
+	--opencl*)
+		OPTIONS+=(opencl)
+		OPENCL_OPTIONS=${1#--opencl=}
+		OPENCL_OPTIONS=(${OPENCL_OPTIONS/,/ })
+		shift
+		;;
+	--compute)
+		echo "WARNING: --compute option is deprecated"
+		OPTIONS+=(opencl headless)
+		OPENCL_OPTIONS=(legacy)
+		shift
+		;;
+	*)
+		ARGS+="$1 "
+		shift
+		;;
+	esac
+done
+
+build_package_list
+
+set -- $ARGS
+amdgpu_pro_${0##*-} "$@"
