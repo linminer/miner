@@ -1,0 +1,57 @@
+#! /bin/sh
+# bdoctor
+### BEGIN INIT INFO
+# Provides:          miner
+# Required-Start:
+# Required-Stop:
+# Default-Start: 3 5
+# Default-Stop:
+# Short-Description: start mining
+# Description:
+### END INIT INFO
+
+export GPU_FORCE_64BIT_PTR=1
+export GPU_MAX_HEAP_SIZE=100
+export GPU_USE_SYNC_OBJECTS=1
+export GPU_MAX_ALLOC_PERCENT=100
+export GPU_SINGLE_ALLOC_PERCENT=100
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64
+
+CLAYMORE_HOME=/home/bdoctor/claymore
+CLAYMORE=$CLAYMORE_HOME/nsgpucnminer
+
+CLAYMORE_ARGS="-tt 65 -fanmin 25 -wd 1 -r 30 -logfile /home/bdoctor/claymore/sumokoin.log -h 0 -dmem 1 -xpool stratum+tcp://mine.sumo.fairpool.xyz:5555 -xwal Sumoo68LPAcRJ5J9q2WBxPQd3kpnbE4fxVLJm4Jwo9Eg4PBjZFogfkG8uiZgp6n9uA4b7tmDVDpDqYH76vx5HHvdiRXo2r4TF1c -xpsw miner49erclaymore@ps-ax.com"
+
+PIDFILE=/var/run/claymore.pid
+
+. /lib/lsb/init-functions
+
+do_stop () {
+	log_action_msg "Stopping miner"
+	kill -TERM `ps ax|grep $CLAYMORE|grep -v grep|awk '{print $1}'`
+	exit
+}
+
+do_start () {
+	log_action_msg "Starting miner"
+	cd $CLAYMORE_HOME && nohup $CLAYMORE $CLAYMORE_ARGS &
+}
+
+case "$1" in
+  start)
+	do_start
+	;;
+  stop)
+	do_stop
+	;;
+  status)
+	ps ax|grep $CLAYMORE
+	exit 0
+	;;
+  *)
+	echo "Usage: $0 start|stop" >&2
+	exit 3
+	;;
+esac
