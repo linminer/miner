@@ -1,7 +1,7 @@
 #! /bin/sh
 # bdoctor
 ### BEGIN INIT INFO
-# Provides:          miner
+# Provides:          gpuminer
 # Required-Start:
 # Required-Stop:
 # Default-Start: 3 5
@@ -22,7 +22,7 @@ LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64
 CLAYMORE_HOME=/home/bdoctor/claymore
 CLAYMORE=$CLAYMORE_HOME/nsgpucnminer
 
-CLAYMORE_ARGS="-tt 65 -fanmin 25 -wd 1 -r 30 -logfile /home/bdoctor/claymore/sumokoin.log -h 0 -dmem 1 -xpool stratum+tcp://mine.sumo.fairpool.xyz:5555 -xwal Sumoo68LPAcRJ5J9q2WBxPQd3kpnbE4fxVLJm4Jwo9Eg4PBjZFogfkG8uiZgp6n9uA4b7tmDVDpDqYH76vx5HHvdiRXo2r4TF1c -xpsw miner49erclaymore@ps-ax.com"
+CLAYMORE_ARGS="-tt 65 -fanmin 25 -wd 1 -r 1 -logfile /home/bdoctor/claymore/sumokoin.log -h 0 -dmem 1 -xpool stratum+tcp://mine.sumo.fairpool.xyz:5555 -xwal Sumoo68LPAcRJ5J9q2WBxPQd3kpnbE4fxVLJm4Jwo9Eg4PBjZFogfkG8uiZgp6n9uA4b7tmDVDpDqYH76vx5HHvdiRXo2r4TF1c -xpsw miner49erclaymore@ps-ax.com"
 
 PIDFILE=/var/run/claymore.pid
 
