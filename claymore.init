@@ -10,19 +10,22 @@
 # Description:
 ### END INIT INFO
 
-export GPU_FORCE_64BIT_PTR=1
+#export GPU_FORCE_64BIT_PTR=1
 export GPU_MAX_HEAP_SIZE=100
 export GPU_USE_SYNC_OBJECTS=1
 export GPU_MAX_ALLOC_PERCENT=100
 export GPU_SINGLE_ALLOC_PERCENT=100
+export LLVM_BIN=/opt/amdgpu-pro/bin
 
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64
 
 CLAYMORE_HOME=/home/bdoctor/claymore
 CLAYMORE=$CLAYMORE_HOME/nsgpucnminer
+LOG_FILE=$CLAYMORE_HOME/mining.log
 
-CLAYMORE_ARGS="-tt 65 -fanmin 25 -wd 1 -r 1 -logfile /home/bdoctor/claymore/sumokoin.log -h 0 -dmem 1 -xpool stratum+tcp://mine.sumo.fairpool.xyz:5555 -xwal Sumoo68LPAcRJ5J9q2WBxPQd3kpnbE4fxVLJm4Jwo9Eg4PBjZFogfkG8uiZgp6n9uA4b7tmDVDpDqYH76vx5HHvdiRXo2r4TF1c -xpsw miner49erclaymore@ps-ax.com"
+#CLAYMORE_ARGS="-tt 65 -fanmin 80 -wd 1 -r 1 -logfile $LOG_FILE -h 0 -dmem 1 -xpool stratum+tcp://mine.sumo.fairpool.xyz:5555 -xwal Sumoo68LPAcRJ5J9q2WBxPQd3kpnbE4fxVLJm4Jwo9Eg4PBjZFogfkG8uiZgp6n9uA4b7tmDVDpDqYH76vx5HHvdiRXo2r4TF1c -xpsw miner49erclaymore@ps-ax.com"
+
+CLAYMORE_ARGS="-tt 65 -fanmin 80 -wd 1 -r 1 -logfile $LOG_FILE -h 0 -dmem 1 -xpool stratum+tcp://pool.supportxmr.com:7777 -xwal 45tyvZfuS1T1hZuVqrZuk16gRipjuWDRyg6fR8WxBq4PLX5nFEmZ8rJeLXXQHfESseWv7qbmZbaFpdtMnBSXvr5vCjDzbQn -xpsw miner49erclaymore@ps-ax.com"
 
 PIDFILE=/var/run/claymore.pid
 
