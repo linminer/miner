@@ -1,0 +1,19 @@
+A collection of helpful linux AMD GPU mining utilities. Mostly focused on XMR, AMD RX570 and Vega Frontier Edition, plus the Vega 56.
+
+The init scripts are for Ubuntu 16.0.4
+The fan scripts assume a working lm-sensors package, 255 is max RPM.
+The profitability script uses http://whattomine.com/coins.json and you can add to the watchlist for currencies that matter to you vs. the 24hour/immediate stats.
+
+Both of the stats scripts for XMR and Claymore need to be modified to reflect hosts in your network. XMR has to be built with microhttpd (apt install libmicrohttpd-dev for ubuntu)
+
+The vega-xmr.init file is a bit unique in that it launches two processes - one for my RX5XX cards and one for my Vega cards. The Vega cards use ROCM and need to run as a normal user, hence:
+
+    #
+    # NOTE::: The new Vega and Frontiers use ROCM. At least with Ubuntu, I have to launch xmr-stak as myself, NOT as root as I normally would.
+    # Certain performance capabilitie are not available with OpenCL and legacy devices (rx5xx), if not running as root. Therefore there are two
+    # init statements if you run a mixed system as I do. Modify to suite otherwise
+    #
+
+Monero donations: 45tyvZfuS1T1hZuVqrZuk16gRipjuWDRyg6fR8WxBq4PLX5nFEmZ8rJeLXXQHfESseWv7qbmZbaFpdtMnBSXvr5vCjDzbQn
+
+Happy mining!
