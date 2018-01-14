@@ -1,0 +1,65 @@
+#! /bin/sh
+# bdoctor
+### BEGIN INIT INFO
+# Provides:          xmrminer
+# Required-Start:
+# Required-Stop:
+# Default-Start: 3 5
+# Default-Stop:
+# Short-Description: start mining
+# Description:
+### END INIT INFO
+
+#
+# NOTE::: The new Vega and Frontiers use ROCM. At least with Ubuntu, I have to launch xmr-stak as myself, NOT as root as I normally would.
+# Certain performance capabilitie are not available with OpenCL and legacy devices (rx5xx), if not running as root. Therefore there are two
+# init statements if you run a mixed system as I do. Modify to suite otherwise
+#
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+
+XMR_HOME=/home/bdoctor/xmr-stak
+XMR=$XMR_HOME/bin/xmr-stak
+
+XMR_ROOT_CMD="--noCPU --amd $XMR_HOME/rx4x-amd.txt --config $XMR_HOME/config.txt"
+
+XMR_SU="bdoctor"
+
+XMR_USER_CMD="--noCPU --amd $XMR_HOME/vega.txt --config $XMR_HOME/vega-config.txt"
+
+PIDFILE=/var/run/claymore.pid
+
+. /lib/lsb/init-functions
+
+do_stop () {
+	log_action_msg "Stopping XMR miner"
+	kill -TERM `ps ax|grep $XMR|grep -v grep|awk '{print $1}'`
+        $XMR_HOME/stop_fans.sh
+	exit
+}
+
+do_start () {
+	log_action_msg "Starting XMR miner"
+	log_action_msg "Setting fans up for full speed"
+        $XMR_HOME/start_fans.sh
+	$XMR $XMR_ROOT_CMD &> /tmp/xmr_root.log
+	sleep 1
+	su $XMR_SU -c "$XMR $XMR_USER_CMD" &> /tmp/xmr_vega.log &
+}
+
+case "$1" in
+  start)
+	do_start
+	;;
+  stop)
+	do_stop
+	;;
+  status)
+	ps ax|grep $XMR
+	exit 0
+	;;
+  *)
+	echo "Usage: $0 start|stop" >&2
+	exit 3
+	;;
+esac
