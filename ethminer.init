@@ -1,0 +1,71 @@
+#! /bin/sh
+# bdoctor
+### BEGIN INIT INFO
+# Provides:          ethminer
+# Required-Start:
+# Required-Stop:
+# Default-Start: 3 5
+# Default-Stop:
+# Short-Description: start mining
+# Description:
+### END INIT INFO
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+
+ETHMINER_HOME=/home/bdoctor/Ethminer
+ETHMINER=$ETHMINER_HOME/bin/Ethminer
+
+ETHMINER_ROOT_CMD="-G -S eth.pool.minergate.com:45791 -u minergate@ps-ax.com"
+
+ETHMINER_SU="bdoctor"
+
+ETHMINER_USER_CMD="-G -S eth.pool.minergate.com:45791 -u minergate@ps-ax.com"
+
+PIDFILE=/var/run/ethminer.pid
+
+. /lib/lsb/init-functions
+
+set_fans () {
+	GPUS="1 2 3 4 5"
+
+	for gpu in $GPUS; do
+    		echo $gpu
+    		cat /sys/class/hwmon/hwmon$gpu/pwm1
+    		echo "255" > /sys/class/hwmon/hwmon$gpu/pwm1
+    		cat /sys/class/hwmon/hwmon$gpu/fan1_input
+	done
+}
+
+
+
+do_stop () {
+	log_action_msg "Stopping ETHMINER miner"
+	kill -TERM `ps ax|grep $ETHMINER|grep -v grep|awk '{print $1}'`
+	exit
+}
+
+do_start () {
+	log_action_msg "Starting ETHMINER miner"
+	log_action_msg "Setting fans up for full speed"
+	set_fans
+	$ETHMINER $ETHMINER_ROOT_CMD &> /tmp/xmr_root.log
+	sleep 1
+	su $ETHMINER_SU -c "$ETHMINER $ETHMINER_USER_CMD" &> /tmp/xmr_vega.log &
+}
+
+case "$1" in
+  start)
+	do_start
+	;;
+  stop)
+	do_stop
+	;;
+  status)
+	ps ax|grep $ETHMINER
+	exit 0
+	;;
+  *)
+	echo "Usage: $0 start|stop" >&2
+	exit 3
+	;;
+esac
