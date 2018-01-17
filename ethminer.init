@@ -12,8 +12,10 @@
 
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 
+MINER_HOME=/home/bdoctor/miner
+
 ETHMINER_HOME=/home/bdoctor/Ethminer
-ETHMINER=$ETHMINER_HOME/bin/Ethminer
+ETHMINER=$ETHMINER_HOME/ethminer
 
 ETHMINER_ROOT_CMD="-G -S eth.pool.minergate.com:45791 -u minergate@ps-ax.com"
 
@@ -25,21 +27,9 @@ PIDFILE=/var/run/ethminer.pid
 
 . /lib/lsb/init-functions
 
-set_fans () {
-	GPUS="1 2 3 4 5"
-
-	for gpu in $GPUS; do
-    		echo $gpu
-    		cat /sys/class/hwmon/hwmon$gpu/pwm1
-    		echo "255" > /sys/class/hwmon/hwmon$gpu/pwm1
-    		cat /sys/class/hwmon/hwmon$gpu/fan1_input
-	done
-}
-
-
-
 do_stop () {
 	log_action_msg "Stopping ETHMINER miner"
+	$MINER_HOME/stop_fans.sh
 	kill -TERM `ps ax|grep $ETHMINER|grep -v grep|awk '{print $1}'`
 	exit
 }
@@ -47,10 +37,10 @@ do_stop () {
 do_start () {
 	log_action_msg "Starting ETHMINER miner"
 	log_action_msg "Setting fans up for full speed"
-	set_fans
+	$MINER_HOME/start_fans.sh
 	$ETHMINER $ETHMINER_ROOT_CMD &> /tmp/xmr_root.log
-	sleep 1
-	su $ETHMINER_SU -c "$ETHMINER $ETHMINER_USER_CMD" &> /tmp/xmr_vega.log &
+#	sleep 1
+#	su $ETHMINER_SU -c "$ETHMINER $ETHMINER_USER_CMD" &> /tmp/xmr_vega.log &
 }
 
 case "$1" in
