@@ -25,6 +25,7 @@ dead_strings = {}
 
 dead_strings['segfault at'] = 'detected segfault!'
 dead_strings['amd_sched_entity_push_job'] = 'GPU died'
+dead_strings['general protection ip:'] = 'general protection fault'
 
 restart_script = '/home/bdoctor/miner/restart.sh'
 
